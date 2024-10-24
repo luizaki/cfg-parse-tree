@@ -6,9 +6,12 @@ class State {
   Rule rule;
   int startIndex;
   int dot;
-  TreeNode? node;
 
-  State(this.rule, this.startIndex, this.dot, {this.node});
+  // parse tree things
+  TreeNode node;
+
+  State(this.rule, this.startIndex, this.dot)
+      : node = TreeNode(NT(rule.nonTerminal));
 
   Symbol? next() {
     return dot < rule.production.length ? rule.production[dot] : null;

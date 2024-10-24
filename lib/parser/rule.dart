@@ -17,7 +17,7 @@ class Rule {
     return true;
   }
 
-  bool isNullable() => production.isEmpty;
+  bool isNullable() => production.contains(T('ε'));
 
   @override
   String toString() {
