@@ -1,4 +1,4 @@
-import 'rule.dart';
+import 'grammar.dart';
 import 'symbol.dart';
 import 'tree.dart';
 

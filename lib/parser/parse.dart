@@ -1,6 +1,5 @@
 import 'grammar.dart';
 import 'state.dart';
-import 'rule.dart';
 import 'symbol.dart';
 import 'tree.dart';
 
