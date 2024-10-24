@@ -190,11 +190,12 @@ class SetInputState extends State<SetInput> {
           ),
           const SizedBox(height: 20.0),
           TextField(
-              controller: inputStringController,
-              decoration: const InputDecoration(
-                labelText: 'Input String',
-                hintText: 'Enter string to parse',
-              )),
+            controller: inputStringController,
+            decoration: const InputDecoration(
+              labelText: 'Input String',
+              hintText: 'Enter string to parse',
+            ),
+          ),
           const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: generateTree,

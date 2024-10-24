@@ -73,10 +73,17 @@ class _TreeViewState extends State<TreeView> {
                 },
               )),
         ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Go Back'),
+        ),
       ],
     ));
   }
 
+// to design each node
   Widget nodeWidget(String label) {
     return Container(
         padding: const EdgeInsets.all(16),
