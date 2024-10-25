@@ -71,93 +71,79 @@ class Parser {
   // add new states
   void predict(State st, int i, Chart chart) {
     for (Rule rule in grammar.rules) {
-      // if rule's left hand (nt) matches the next state's left hand (nt), add to chart
       if (rule.nonTerminal == st.next()!.value) {
-        if (rule.isNullable()) {
-          var epsilonState = State(st.rule, st.startIndex, st.dot + 1);
-          print('Predict $epsilonState');
-          chart.chart[i].add(epsilonState);
-        } else {
-          var newState = State(rule, i, 0);
-          print('Predict $newState');
-          chart.chart[i].add(newState);
-          newState.node = TreeNode(rule.nt);
-        }
+        var newState = State(rule, i, 0);
+        chart.chart[i].add(newState);
+
+        // Attach the predicted non-terminal node to the current state node
+        TreeNode nonTerminalNode = TreeNode(Symbol('NT', rule.nonTerminal));
+        st.node.addChild(nonTerminalNode); // Link to parent
+        newState.node = nonTerminalNode; // Set new state node for tree
       }
     }
   }
 
-// move dot if state's right hand matches input
   void scan(State st, int i, String input, Chart chart) {
     if (st.startIndex + st.dot < input.length) {
       if (st.next()!.value == input[st.startIndex + st.dot]) {
         var newState = State(st.rule, st.startIndex, st.dot + 1);
 
-        TreeNode newNode = TreeNode(T(input[st.startIndex + st.dot]));
-        newState.node.addChild(newNode);
-        print('Scan $newState');
+        // Create a TreeNode for the scanned terminal symbol
+        TreeNode terminalNode = TreeNode(Symbol('T', input[st.startIndex + st.dot]));
+        st.node.addChild(terminalNode); // Link terminal to parent
+        newState.node = st.node; // Pass the same parent node to next state
+
         chart.chart[i + 1].add(newState);
       }
     }
   }
 
-  // finalize state by backtracking the rules
   void complete(State st, int i, Chart chart) {
     for (State s in chart.chart[st.startIndex]) {
-      if (!s.isComplete() &&
-          s.next()!.equals(Symbol('NT', st.rule.nonTerminal))) {
+      if (!s.isComplete() && s.next()!.equals(Symbol('NT', st.rule.nonTerminal))) {
         var newState = State(s.rule, s.startIndex, s.dot + 1);
 
-        if (!newState.node.children.contains(st.node)) {
-          newState.node.addChild(st.node);
-        }
-        print('Complete $newState');
-        chart.chart[i].add(newState);
-      }
-    }
+        // Attach completed subtree to parent
+        s.node.addChild(st.node); // Connect child to parent's tree
+        newState.node = s.node; // Set parent node for the new state
 
-    if (st.rule.nonTerminal == grammar.startSymbol) {
-      // Make sure the root node is connected to its children
-      for (State s in chart.chart[st.startIndex]) {
-        if (!s.isComplete() && s.rule.nonTerminal == grammar.startSymbol) {
-          st.node.addChild(s.node);
-        }
+        chart.chart[i].add(newState);
       }
     }
   }
 
+
+
   Map<String, dynamic> generateTreeJson(TreeNode root) {
-    List<Map<String, dynamic>> nodes = [];
-    List<Map<String, dynamic>> edges = [];
-    int nodeId = 1;
+  List<Map<String, dynamic>> nodes = [];
+  List<Map<String, dynamic>> edges = [];
+  int nodeId = 1;
 
-    // A map to associate node labels with their unique IDs
-    Map<TreeNode, int> nodeMapping = {};
+  // Map to assign each TreeNode a unique ID
+  Map<TreeNode, int> nodeMapping = {};
 
+    // Recursive function to add nodes and edges for the JSON structure
     void traverse(TreeNode node, [int? parentId]) {
-      // Assign an ID to the current node
       if (!nodeMapping.containsKey(node)) {
         int currentId = nodeId++;
         nodes.add({
           'id': currentId,
           'label': node.symbol.value,
         });
-        nodeMapping[node] = currentId; // Map the node to its ID
+        nodeMapping[node] = currentId;
 
-        // If there's a parent, add an edge
         if (parentId != null) {
           edges.add({'from': parentId, 'to': currentId});
         }
       }
 
-      // Recursively traverse children
+      int currentNodeId = nodeMapping[node]!;
       for (TreeNode child in node.children) {
-        traverse(child, nodeMapping[node]);
+        traverse(child, currentNodeId);
       }
     }
 
-    traverse(root);
-
+    traverse(root); // Start traversing from root
     return {
       'nodes': nodes,
       'edges': edges,
