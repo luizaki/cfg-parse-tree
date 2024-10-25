@@ -252,7 +252,7 @@ class RuleInput extends StatefulWidget {
   final VoidCallback onDeleteRule;
   final bool isFirstRule;
 
-  RuleInput({
+  const RuleInput({super.key, 
     required this.nonTerminalController,
     required this.productionControllers,
     required this.onAddProduction,
