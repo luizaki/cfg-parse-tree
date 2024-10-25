@@ -47,40 +47,42 @@ class _TreeViewState extends State<TreeView> {
     }
 
     return Scaffold(
-        body: Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: InteractiveViewer(
-              constrained: false,
-              boundaryMargin: const EdgeInsets.all(100),
-              minScale: 0.01,
-              maxScale: 5.6,
-              child: GraphView(
-                graph: graph,
-                algorithm:
-                    BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
-                paint: Paint()
-                  ..color = Colors.black
-                  ..strokeWidth = 2
-                  ..style = PaintingStyle.stroke,
-                builder: (Node node) {
-                  var id = node.key!.value as int;
-                  var nodes = cfgJson['nodes'];
-                  var nodeValue =
-                      nodes!.firstWhere((element) => element['id'] == id);
-                  return nodeWidget(nodeValue['label'] as String);
-                },
-              )),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Go Back'),
-        ),
-      ],
-    ));
+        body: SafeArea(
+          child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+          Expanded(
+            child: InteractiveViewer(
+                constrained: false,
+                boundaryMargin: const EdgeInsets.all(100),
+                minScale: 0.01,
+                maxScale: 5.6,
+                child: GraphView(
+                  graph: graph,
+                  algorithm:
+                      BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
+                  paint: Paint()
+                    ..color = Colors.black
+                    ..strokeWidth = 2
+                    ..style = PaintingStyle.stroke,
+                  builder: (Node node) {
+                    var id = node.key!.value as int;
+                    var nodes = cfgJson['nodes'];
+                    var nodeValue =
+                        nodes!.firstWhere((element) => element['id'] == id);
+                    return nodeWidget(nodeValue['label'] as String);
+                  },
+                )),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Go Back'),
+          ),
+                ],
+              ),
+        ));
   }
 
 // to design each node

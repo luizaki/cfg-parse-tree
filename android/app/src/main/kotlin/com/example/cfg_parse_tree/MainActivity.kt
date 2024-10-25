@@ -1,4 +1,4 @@
-package com.example.cfg_parse_tree
+package dev.hau.cfg
 
 import io.flutter.embedding.android.FlutterActivity
 
