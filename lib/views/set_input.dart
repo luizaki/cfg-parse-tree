@@ -116,7 +116,7 @@ class SetInputState extends State<SetInput> {
 
     // immediately show alert if input string is empty
     if (inputString.isEmpty) {
-      showAlert(context, 'Invalid Input!!!', 'Input string cannot be empty.');
+      showAlert(context, 'Invalid Input!', 'Input string cannot be empty.');
       return;
     } else {
       // attempt to parse
@@ -133,7 +133,7 @@ class SetInputState extends State<SetInput> {
         );
       } else {
         // otherwise just show invalid and stay to the current screen
-        showAlert(context, 'Invalid Input!!!',
+        showAlert(context, 'Invalid Input!',
             'Input string is not valid in the given grammar.');
       }
     }
@@ -157,51 +157,62 @@ class SetInputState extends State<SetInput> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('CFG Parse Tree Generator'),
+          centerTitle: true,
         ),
-        body: Column(children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: rules.length,
-              itemBuilder: (content, index) {
-                if (index < nonTerminalControllers.length &&
-                    index < productionControllersList.length) {
-                  return RuleInput(
-                    nonTerminalController: nonTerminalControllers[index],
-                    productionControllers: productionControllersList[index],
-                    onAddProduction: () => addProduction(index),
-                    onDelete: () => deleteRule(index),
-                    isFirstRule: index == 0,
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: rules.length,
+                  itemBuilder: (content, index) {
+                    if (index < nonTerminalControllers.length &&
+                        index < productionControllersList.length) {
+                      return RuleInput(
+                        nonTerminalController: nonTerminalControllers[index],
+                        productionControllers: productionControllersList[index],
+                        onAddProduction: () => addProduction(index),
+                        onDelete: () => deleteRule(index),
+                        isFirstRule: index == 0,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: resetRules,
+                    child: const Text('Reset',
+                    style: TextStyle(color: Colors.redAccent),),
+                  ),
+                  const SizedBox(width: 20.0),
+                  ElevatedButton(
+                    onPressed: addRule,
+                    child: const Text('Add Rule'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: inputStringController,
+                decoration: const InputDecoration(
+                  labelText: 'Input String',
+                  hintText: 'Enter string to parse',
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: generateTree,
+                child: const Text('Generate'),
+              ),
+            ]),
           ),
-          const SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: addRule,
-            child: const Text('Add Rule'),
-          ),
-          const SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: resetRules,
-            child: const Text('Reset'),
-          ),
-          const SizedBox(height: 20.0),
-          TextField(
-            controller: inputStringController,
-            decoration: const InputDecoration(
-              labelText: 'Input String',
-              hintText: 'Enter string to parse',
-            ),
-          ),
-          const SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: generateTree,
-            child: const Text('Generate'),
-          ),
-        ]));
+        ));
   }
 }
 
