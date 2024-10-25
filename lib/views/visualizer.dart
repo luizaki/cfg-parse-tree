@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
@@ -47,54 +49,73 @@ class _TreeViewState extends State<TreeView> {
     }
 
     return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text('Parsed Tree'),
+          centerTitle: true,
+        ),
         body: SafeArea(
-          child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-          Expanded(
-            child: InteractiveViewer(
-                constrained: false,
-                boundaryMargin: const EdgeInsets.all(100),
-                minScale: 0.01,
-                maxScale: 5.6,
-                child: GraphView(
-                  graph: graph,
-                  algorithm:
-                      BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
-                  paint: Paint()
-                    ..color = Colors.black
-                    ..strokeWidth = 2
-                    ..style = PaintingStyle.stroke,
-                  builder: (Node node) {
-                    var id = node.key!.value as int;
-                    var nodes = cfgJson['nodes'];
-                    var nodeValue =
-                        nodes!.firstWhere((element) => element['id'] == id);
-                    return nodeWidget(nodeValue['label'] as String);
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: InteractiveViewer(
+                      constrained: false,
+                      boundaryMargin: const EdgeInsets.all(100),
+                      minScale: 0.01,
+                      maxScale: 5.6,
+                      child: GraphView(
+                        graph: graph,
+                        algorithm: BuchheimWalkerAlgorithm(
+                            builder, TreeEdgeRenderer(builder)),
+                        paint: Paint()
+                          ..color = Colors.black38
+                          ..strokeWidth = 2
+                          ..style = PaintingStyle.stroke,
+                        builder: (Node node) {
+                          var id = node.key!.value as int;
+                          var nodes = cfgJson['nodes'];
+                          var nodeValue = nodes!
+                              .firstWhere((element) => element['id'] == id);
+                          return nodeWidget(nodeValue['label'] as String);
+                        },
+                      )),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
-                )),
+                  child: const Text('Back'),
+                ),
+              ],
+            ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Go Back'),
-          ),
-                ],
-              ),
         ));
   }
 
 // to design each node
   Widget nodeWidget(String label) {
     return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: const [
-            BoxShadow(color: Colors.blue, spreadRadius: 1),
-          ],
+      width: 55,
+      height: 55,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white, // Set background color to white
+        border: Border.all(
+          color: Colors.black38, // Set border color to black38
+          width: 2, // Set border width (adjust as needed)
         ),
-        child: Text(label));
+        boxShadow: const [
+          BoxShadow(color: Colors.white, spreadRadius: 1),
+        ],
+      ),
+      child: Center(
+        child: Text(label),
+      ),
+    );
   }
 }

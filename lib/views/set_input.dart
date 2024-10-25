@@ -164,7 +164,7 @@ class SetInputState extends State<SetInput> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('CFG Parse Tree Generator'),
+          title: const Text('CFG Tree Parser'),
           centerTitle: true,
         ),
         body: SafeArea(
