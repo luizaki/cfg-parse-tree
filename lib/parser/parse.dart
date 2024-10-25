@@ -50,7 +50,8 @@ class Parser {
 
         j++;
       }
-      // Debugging output
+
+      // debugging output
       print("Chart at index $i: ${chart.chart[i]}");
       i++;
     }
@@ -61,7 +62,7 @@ class Parser {
           state.isComplete() &&
           state.startIndex == 0) {
         var jsonTree = generateTreeJson(state.node);
-        print(jsonTree); // This will print the JSON-like structure
+        print(jsonTree);
         return jsonTree;
       }
     }
@@ -75,10 +76,11 @@ class Parser {
         var newState = State(rule, i, 0);
         chart.chart[i].add(newState);
 
-        // Attach the predicted non-terminal node to the current state node
-        TreeNode nonTerminalNode = TreeNode(Symbol('NT', rule.nonTerminal));
-        st.node.addChild(nonTerminalNode); // Link to parent
-        newState.node = nonTerminalNode; // Set new state node for tree
+        if (!chart.chart[i].contains(newState)) {
+          TreeNode nonTerminalNode = TreeNode(Symbol('NT', rule.nonTerminal));
+          st.node.addChild(nonTerminalNode); // link to parent
+          newState.node = nonTerminalNode; // set new state node for tree
+        }
       }
     }
   }
@@ -88,10 +90,11 @@ class Parser {
       if (st.next()!.value == input[st.startIndex + st.dot]) {
         var newState = State(st.rule, st.startIndex, st.dot + 1);
 
-        // Create a TreeNode for the scanned terminal symbol
-        TreeNode terminalNode = TreeNode(Symbol('T', input[st.startIndex + st.dot]));
-        st.node.addChild(terminalNode); // Link terminal to parent
-        newState.node = st.node; // Pass the same parent node to next state
+        // creating a node for the terminal
+        TreeNode terminalNode =
+            TreeNode(Symbol('T', input[st.startIndex + st.dot]));
+        st.node.addChild(terminalNode);
+        newState.node = st.node;
 
         chart.chart[i + 1].add(newState);
       }
@@ -100,29 +103,28 @@ class Parser {
 
   void complete(State st, int i, Chart chart) {
     for (State s in chart.chart[st.startIndex]) {
-      if (!s.isComplete() && s.next()!.equals(Symbol('NT', st.rule.nonTerminal))) {
+      if (!s.isComplete() &&
+          s.next()!.equals(Symbol('NT', st.rule.nonTerminal))) {
         var newState = State(s.rule, s.startIndex, s.dot + 1);
 
-        // Attach completed subtree to parent
-        s.node.addChild(st.node); // Connect child to parent's tree
-        newState.node = s.node; // Set parent node for the new state
+        // attach completed subtree to parent
+        s.node.addChild(st.node);
+        newState.node = s.node;
 
         chart.chart[i].add(newState);
       }
     }
   }
 
-
-
   Map<String, dynamic> generateTreeJson(TreeNode root) {
-  List<Map<String, dynamic>> nodes = [];
-  List<Map<String, dynamic>> edges = [];
-  int nodeId = 1;
+    List<Map<String, dynamic>> nodes = [];
+    List<Map<String, dynamic>> edges = [];
+    int nodeId = 1;
 
-  // Map to assign each TreeNode a unique ID
-  Map<TreeNode, int> nodeMapping = {};
+    // assign ids to nodes
+    Map<TreeNode, int> nodeMapping = {};
 
-    // Recursive function to add nodes and edges for the JSON structure
+    // recursive function to add nodes and edges for the JSON structure
     void traverse(TreeNode node, [int? parentId]) {
       if (!nodeMapping.containsKey(node)) {
         int currentId = nodeId++;
@@ -138,12 +140,16 @@ class Parser {
       }
 
       int currentNodeId = nodeMapping[node]!;
+
+      // traverse similarly for each child
       for (TreeNode child in node.children) {
         traverse(child, currentNodeId);
       }
     }
 
-    traverse(root); // Start traversing from root
+    // begin recursion with the root
+    traverse(root);
+
     return {
       'nodes': nodes,
       'edges': edges,
