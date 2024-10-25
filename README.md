@@ -1,6 +1,6 @@
 # cfg
 
-A CFG to Parse Tree
+A CFG to Parse Tree Application
 
 ## Getting Started
 
