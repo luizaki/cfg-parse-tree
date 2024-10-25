@@ -97,17 +97,21 @@ class _TreeViewState extends State<TreeView> {
 // to design each node
   Widget nodeWidget(String label) {
     return Container(
-      width: 50, // Fixed width
-      height: 50, // Fixed height
+      width: 55,
+      height: 55,
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(color: Colors.blue, spreadRadius: 1),
+        color: Colors.white, // Set background color to white
+        border: Border.all(
+          color: Colors.black38, // Set border color to black38
+          width: 2, // Set border width (adjust as needed)
+        ),
+        boxShadow: const [
+          BoxShadow(color: Colors.white, spreadRadius: 1),
         ],
       ),
       child: Center(
-        // Center the text for better visual appeal
         child: Text(label),
       ),
     );
