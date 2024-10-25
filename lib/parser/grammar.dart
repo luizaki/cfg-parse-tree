@@ -34,14 +34,4 @@ class Rule {
   String toString() {
     return '$nonTerminal -> ${production.join('')}';
   }
-
-  String repr() {
-    String out = 'Rule(\'$nonTerminal\', [';
-    for (int i = 0; i < production.length; ++i) {
-      if (i > 0) out += ', ';
-      out += '${production[i].type}(\'${production[i].value}\')';
-    }
-    out += '])';
-    return out;
-  }
 }
