@@ -187,13 +187,21 @@ class SetInputState extends State<SetInput> {
                 children: [
                   ElevatedButton(
                     onPressed: resetRules,
-                    child: const Text('Reset',
-                    style: TextStyle(color: Colors.redAccent),),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.restart_alt, color: Colors.redAccent),
+                        SizedBox(width: 4),
+                        Text(
+                          'Reset',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ],
+                    )
                   ),
                   const SizedBox(width: 20.0),
                   ElevatedButton(
                     onPressed: addRule,
-                    child: const Text('Add Rule'),
+                    child: const Text('+ Rule'),
                   ),
                 ],
               ),
@@ -206,9 +214,21 @@ class SetInputState extends State<SetInput> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: generateTree,
-                child: const Text('Generate'),
+              SizedBox(
+                width: double
+                    .infinity, // This will make the button take the entire width
+                child: ElevatedButton(
+                  onPressed: generateTree,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.account_tree_rounded),
+                      SizedBox(width: 8.0),
+                      Text('Generate',
+                      style: TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                ),
               ),
             ]),
           ),
@@ -271,7 +291,7 @@ class _RuleInputState extends State<RuleInput> {
                   ),
                 ElevatedButton(
                   onPressed: widget.onAddProduction,
-                  child: const Text('Add Production'),
+                  child: const Text('+ Production'),
                 ),
               ],
             ),
@@ -279,7 +299,7 @@ class _RuleInputState extends State<RuleInput> {
           const SizedBox(width: 10),
           if (!widget.isFirstRule)
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: const Icon(Icons.delete, color: Colors.redAccent),
               onPressed: widget.onDelete,
               tooltip: 'Delete this rule',
             ),
