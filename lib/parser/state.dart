@@ -39,6 +39,6 @@ class State {
       productionWithDot.add('•');
     }
 
-    return '${rule.nonTerminal} -> ${productionWithDot.join('')}';
+    return '${rule.nonTerminal} -> ${productionWithDot.join('')} ($startIndex)';
   }
 }
