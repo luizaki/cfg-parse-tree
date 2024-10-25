@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cfg_parse_tree/parser/cfg.dart';
-import 'package:cfg_parse_tree/views/visualizer.dart';
+import 'package:cfg/parser/cfg.dart';
+import 'package:cfg/views/visualizer.dart';
 
 class SetInput extends StatefulWidget {
   const SetInput({super.key});

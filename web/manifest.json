@@ -1,11 +1,11 @@
 {
-    "name": "cfg_parse_tree",
-    "short_name": "cfg_parse_tree",
+    "name": "cfg",
+    "short_name": "cfg",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#hexcode",
-    "description": "A new Flutter project.",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "A CFG to Parse Tree",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

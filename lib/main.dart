@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:cfg_parse_tree/views/set_input.dart';
+import 'package:cfg/views/set_input.dart';
 
 void main() {
   runApp(const App());
