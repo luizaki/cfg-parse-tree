@@ -49,6 +49,8 @@ class _TreeViewState extends State<TreeView> {
 
     return Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0,
+          elevation: 0,
           automaticallyImplyLeading: false,
           title: const Text('Parsed Tree'),
           centerTitle: true,
