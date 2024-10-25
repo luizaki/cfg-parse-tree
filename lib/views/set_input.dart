@@ -53,6 +53,14 @@ class SetInputState extends State<SetInput> {
     });
   }
 
+  void deleteProduction(int ruleIndex, int productionIndex) {
+    setState(() {
+      if (productionControllersList[ruleIndex].length > 1) {
+        productionControllersList[ruleIndex].removeAt(productionIndex);
+      }
+    });
+  }
+
   void resetRules() {
     setState(() {
       rules = [
@@ -173,7 +181,9 @@ class SetInputState extends State<SetInput> {
                         nonTerminalController: nonTerminalControllers[index],
                         productionControllers: productionControllersList[index],
                         onAddProduction: () => addProduction(index),
-                        onDelete: () => deleteRule(index),
+                        onDeleteProduction: (productionIndex) =>
+                            deleteProduction(index, productionIndex),
+                        onDeleteRule: () => deleteRule(index),
                         isFirstRule: index == 0,
                       );
                     } else {
@@ -186,18 +196,17 @@ class SetInputState extends State<SetInput> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: resetRules,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.restart_alt, color: Colors.redAccent),
-                        SizedBox(width: 4),
-                        Text(
-                          'Reset',
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                      ],
-                    )
-                  ),
+                      onPressed: resetRules,
+                      child: const Row(
+                        children: [
+                          Icon(Icons.restart_alt, color: Colors.redAccent),
+                          SizedBox(width: 4),
+                          Text(
+                            'Reset',
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
+                        ],
+                      )),
                   const SizedBox(width: 20.0),
                   ElevatedButton(
                     onPressed: addRule,
@@ -224,8 +233,7 @@ class SetInputState extends State<SetInput> {
                     children: [
                       Icon(Icons.account_tree_rounded),
                       SizedBox(width: 8.0),
-                      Text('Generate',
-                      style: TextStyle(fontSize: 18)),
+                      Text('Generate', style: TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),
@@ -240,14 +248,16 @@ class RuleInput extends StatefulWidget {
   final TextEditingController nonTerminalController;
   final List<TextEditingController> productionControllers;
   final VoidCallback onAddProduction;
-  final VoidCallback onDelete;
+  final void Function(int) onDeleteProduction;
+  final VoidCallback onDeleteRule;
   final bool isFirstRule;
 
   RuleInput({
     required this.nonTerminalController,
     required this.productionControllers,
     required this.onAddProduction,
-    required this.onDelete,
+    required this.onDeleteProduction,
+    required this.onDeleteRule,
     required this.isFirstRule,
   });
 
@@ -278,16 +288,28 @@ class _RuleInputState extends State<RuleInput> {
           Expanded(
             child: Column(
               children: [
-                for (var controller in widget.productionControllers)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Production',
-                        hintText: 'e.g. aS | b',
+                for (var i = 0;
+                    i < widget.productionControllers.length;
+                    i++) // Define `i` here
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            labelText: 'Production',
+                            hintText: 'e.g. aS | b',
+                          ),
+                          controller: widget.productionControllers[i],
+                        ),
                       ),
-                      controller: controller,
-                    ),
+                      if (i > 0)
+                        IconButton(
+                          icon:
+                              const Icon(Icons.delete, color: Colors.redAccent),
+                          onPressed: () => widget.onDeleteProduction(i),
+                          tooltip: 'Delete this production',
+                        ),
+                    ],
                   ),
                 ElevatedButton(
                   onPressed: widget.onAddProduction,
@@ -300,7 +322,7 @@ class _RuleInputState extends State<RuleInput> {
           if (!widget.isFirstRule)
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.redAccent),
-              onPressed: widget.onDelete,
+              onPressed: widget.onDeleteRule,
               tooltip: 'Delete this rule',
             ),
         ],
