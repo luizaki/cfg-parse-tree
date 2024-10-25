@@ -57,6 +57,7 @@ class _TreeViewState extends State<TreeView> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Expanded(
                   child: InteractiveViewer(
