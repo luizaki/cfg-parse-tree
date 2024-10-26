@@ -34,7 +34,6 @@ class _TreeViewState extends State<TreeView> {
 
     for (var nodeData in cfgJson['nodes']!) {
       int id = nodeData['id'] as int;
-      String label = nodeData['label'] as String;
       var node = Node.Id(id);
       nodeMap[id] = node;
       graph.addNode(node);
