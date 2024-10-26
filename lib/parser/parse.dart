@@ -14,7 +14,9 @@ class Chart {
     chart = List.generate(inputString.length + 1, (i) => []);
 
     // add start state
-    chart[0].add(State(grammar.rules[0], 0, 0));
+    var startState = State(grammar.rules[0], 0, 0);
+    startState.node = TreeNode(NT(grammar.rules[0].nonTerminal));
+    chart[0].add(startState);
   }
 
   int length() {
@@ -61,6 +63,7 @@ class Parser {
       if (state.rule.nonTerminal == grammar.startSymbol &&
           state.isComplete() &&
           state.startIndex == 0) {
+        print(state);
         var jsonTree = generateTreeJson(state.node);
         print(jsonTree);
         return jsonTree;
@@ -71,20 +74,33 @@ class Parser {
 
   // add new states
   void predict(State st, int i, Chart chart) {
+    print(st);
     for (Rule rule in grammar.rules) {
       if (rule.nonTerminal == st.next()!.value) {
         var newState = State(rule, i, 0);
-        chart.chart[i].add(newState);
 
-        if (!chart.chart[i].contains(newState)) {
-          TreeNode nonTerminalNode = TreeNode(Symbol('NT', rule.nonTerminal));
-          st.node.addChild(nonTerminalNode); // link to parent
-          newState.node = nonTerminalNode; // set new state node for tree
+        if (!chart.chart[i].any((s) => s.equals(newState))) {
+          chart.chart[i].add(newState);
+          st.node.addChild(newState.node); // link to parent
+        }
+
+        // handle epsilon rules
+        if (rule.isNullable()) {
+          var epsilonState = State(st.rule, st.startIndex, st.dot + 1);
+          if (!chart.chart[i].any((s) => s.equals(epsilonState))) {
+            chart.chart[i].add(epsilonState);
+
+            // handle tree structure for epsilon
+            TreeNode epsilonNode = TreeNode(Symbol('null', 'ε'));
+            newState.node.addChild(epsilonNode);
+            epsilonState.node = newState.node;
+          }
         }
       }
     }
   }
 
+  // move dot if state's right hand matches input
   void scan(State st, int i, String input, Chart chart) {
     if (st.startIndex + st.dot < input.length) {
       if (st.next()!.value == input[st.startIndex + st.dot]) {
@@ -101,6 +117,7 @@ class Parser {
     }
   }
 
+  // finalize state by backtracking the rules
   void complete(State st, int i, Chart chart) {
     for (State s in chart.chart[st.startIndex]) {
       if (!s.isComplete() &&
