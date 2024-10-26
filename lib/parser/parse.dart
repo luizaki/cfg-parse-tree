@@ -14,9 +14,7 @@ class Chart {
     chart = List.generate(inputString.length + 1, (i) => []);
 
     // add start state
-    var startState = State(grammar.rules[0], 0, 0);
-    startState.node = TreeNode(NT(grammar.rules[0].nonTerminal));
-    chart[0].add(startState);
+    chart[0].add(State(grammar.rules[0], 0, 0));
   }
 
   int length() {
@@ -63,7 +61,6 @@ class Parser {
       if (state.rule.nonTerminal == grammar.startSymbol &&
           state.isComplete() &&
           state.startIndex == 0) {
-        print(state);
         var jsonTree = generateTreeJson(state.node);
         print(jsonTree);
         return jsonTree;
@@ -77,34 +74,17 @@ class Parser {
     for (Rule rule in grammar.rules) {
       if (rule.nonTerminal == st.next()!.value) {
         var newState = State(rule, i, 0);
-        newState.node =
-            TreeNode(NT(rule.nonTerminal)); // Create a node for non-terminal
+        chart.chart[i].add(newState);
 
-        if (!chart.chart[i].any((s) => s.equals(newState))) {
-          chart.chart[i].add(newState);
-          st.node.addChild(newState.node); // Link new non-terminal to parent
-        }
-
-        // Handle nullable (epsilon) rules
-        if (rule.isNullable()) {
-          // Move dot for nullable production
-          var epsilonState = State(st.rule, st.startIndex, st.dot + 1);
-          if (!chart.chart[i].any((s) => s.equals(epsilonState))) {
-            chart.chart[i].add(epsilonState);
-
-            // Create epsilon node under the new state for nullable production
-            TreeNode epsilonNode = TreeNode(Symbol('T', 'ε'));
-            newState.node
-                .addChild(epsilonNode); // Attach epsilon to `A` (not `S`)
-            epsilonState.node =
-                st.node; // Complete the link back to parent state node
-          }
+        if (!chart.chart[i].contains(newState)) {
+          TreeNode nonTerminalNode = TreeNode(Symbol('NT', rule.nonTerminal));
+          st.node.addChild(nonTerminalNode); // link to parent
+          newState.node = nonTerminalNode; // set new state node for tree
         }
       }
     }
   }
 
-  // move dot if state's right hand matches input
   void scan(State st, int i, String input, Chart chart) {
     if (st.startIndex + st.dot < input.length) {
       if (st.next()!.value == input[st.startIndex + st.dot]) {
@@ -121,16 +101,16 @@ class Parser {
     }
   }
 
-  // finalize state by backtracking the rules
   void complete(State st, int i, Chart chart) {
     for (State s in chart.chart[st.startIndex]) {
       if (!s.isComplete() &&
           s.next()!.equals(Symbol('NT', st.rule.nonTerminal))) {
         var newState = State(s.rule, s.startIndex, s.dot + 1);
-        newState.node = s.node; // Inherit node reference
 
-        // Link completed subtree to parent in the tree
+        // attach completed subtree to parent
         s.node.addChild(st.node);
+        newState.node = s.node;
+
         chart.chart[i].add(newState);
       }
     }
