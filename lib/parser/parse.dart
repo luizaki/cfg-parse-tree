@@ -77,7 +77,8 @@ class Parser {
     for (Rule rule in grammar.rules) {
       if (rule.nonTerminal == st.next()!.value) {
         var newState = State(rule, i, 0);
-        newState.node = TreeNode(NT(rule.nonTerminal)); // Create a node for non-terminal
+        newState.node =
+            TreeNode(NT(rule.nonTerminal)); // Create a node for non-terminal
 
         if (!chart.chart[i].any((s) => s.equals(newState))) {
           chart.chart[i].add(newState);
@@ -93,8 +94,10 @@ class Parser {
 
             // Create epsilon node under the new state for nullable production
             TreeNode epsilonNode = TreeNode(Symbol('T', 'ε'));
-            newState.node.addChild(epsilonNode); // Attach epsilon to `A` (not `S`)
-            epsilonState.node = st.node; // Complete the link back to parent state node
+            newState.node
+                .addChild(epsilonNode); // Attach epsilon to `A` (not `S`)
+            epsilonState.node =
+                st.node; // Complete the link back to parent state node
           }
         }
       }
