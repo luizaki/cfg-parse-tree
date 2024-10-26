@@ -74,26 +74,27 @@ class Parser {
 
   // add new states
   void predict(State st, int i, Chart chart) {
-    print(st);
     for (Rule rule in grammar.rules) {
       if (rule.nonTerminal == st.next()!.value) {
         var newState = State(rule, i, 0);
+        newState.node = TreeNode(NT(rule.nonTerminal)); // Create a node for non-terminal
 
         if (!chart.chart[i].any((s) => s.equals(newState))) {
           chart.chart[i].add(newState);
-          st.node.addChild(newState.node); // link to parent
+          st.node.addChild(newState.node); // Link new non-terminal to parent
         }
 
-        // handle epsilon rules
+        // Handle nullable (epsilon) rules
         if (rule.isNullable()) {
+          // Move dot for nullable production
           var epsilonState = State(st.rule, st.startIndex, st.dot + 1);
           if (!chart.chart[i].any((s) => s.equals(epsilonState))) {
             chart.chart[i].add(epsilonState);
 
-            // handle tree structure for epsilon
-            TreeNode epsilonNode = TreeNode(Symbol('null', 'ε'));
-            newState.node.addChild(epsilonNode);
-            epsilonState.node = newState.node;
+            // Create epsilon node under the new state for nullable production
+            TreeNode epsilonNode = TreeNode(Symbol('T', 'ε'));
+            newState.node.addChild(epsilonNode); // Attach epsilon to `A` (not `S`)
+            epsilonState.node = st.node; // Complete the link back to parent state node
           }
         }
       }
@@ -123,11 +124,10 @@ class Parser {
       if (!s.isComplete() &&
           s.next()!.equals(Symbol('NT', st.rule.nonTerminal))) {
         var newState = State(s.rule, s.startIndex, s.dot + 1);
+        newState.node = s.node; // Inherit node reference
 
-        // attach completed subtree to parent
+        // Link completed subtree to parent in the tree
         s.node.addChild(st.node);
-        newState.node = s.node;
-
         chart.chart[i].add(newState);
       }
     }
