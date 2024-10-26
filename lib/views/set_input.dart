@@ -95,7 +95,7 @@ class SetInputState extends State<SetInput> {
             if (productionString.isEmpty) continue;
 
             if (productionString == 'ε') {
-              productionSymbols.add(T('ε'));
+              productionSymbols.add(Symbol('null', 'ε'));
             } else {
               for (int j = 0; j < productionString.length; j++) {
                 String c = productionString[j];
@@ -254,7 +254,8 @@ class RuleInput extends StatefulWidget {
   final VoidCallback onDeleteRule;
   final bool isFirstRule;
 
-  const RuleInput({super.key, 
+  const RuleInput({
+    super.key,
     required this.nonTerminalController,
     required this.productionControllers,
     required this.onAddProduction,

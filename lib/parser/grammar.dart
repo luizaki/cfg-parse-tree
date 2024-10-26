@@ -28,7 +28,12 @@ class Rule {
     return true;
   }
 
-  bool isNullable() => production.contains(T('ε'));
+  bool isNullable() {
+    for (Symbol s in production) {
+      if (s.value == 'ε') return true;
+    }
+    return false;
+  }
 
   @override
   String toString() {
